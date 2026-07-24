@@ -8,7 +8,7 @@ Este projeto é uma API REST para gerenciamento de um supermercado, desenvolvida
 - **H2 Database**
 - **MySQL**
 - **Spring Security**
-- **JWT (Java Web Token)**
+- **JWT (JSON Web Token)**
 - **SpringDoc OpenAPI (Swagger)**
 
 ## Configuração dos Bancos de Dados

@@ -11,8 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -44,7 +44,7 @@ public class SupermarketApplicationTests {
 	public void testProdutoGetWithAuth() throws Exception {
 		mvc.perform(get(url_padrao + "produto/1")).andExpect(status().isOk()).andExpect(
 				content().string(
-						"{\"id\":1,\"nome\":\"Smartphone\",\"marca\":\"Samsung\",\"preco\":3000.00,\"estoque\":20,\"descricao\":\"O melhor da Samsung\",\"disponivel\":true,\"categorias\":[{\"id\":2,\"nome\":\"Smartphones\"},{\"id\":4,\"nome\":\"EletrÃ´nicos\"}],\"imagens\":[]}"));
+						"{\"id\":1,\"nome\":\"Smartphone\",\"marca\":\"Samsung\",\"preco\":3000.00,\"estoque\":20,\"descricao\":\"O melhor da Samsung\",\"disponivel\":true,\"categorias\":[{\"id\":2,\"nome\":\"Smartphones\"},{\"id\":4,\"nome\":\"EletrÃ´nicos\"}],\"imagens\":[],\"disponivel\":true,\"id\":1}"));
 	}
 
 	@Test

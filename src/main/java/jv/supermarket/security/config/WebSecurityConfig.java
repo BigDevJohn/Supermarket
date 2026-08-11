@@ -39,9 +39,8 @@ public class WebSecurityConfig {
 
     @Bean
     AuthenticationManager authManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService());
 
-        provider.setUserDetailsService(userDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
 
         return new ProviderManager(provider);
@@ -55,7 +54,7 @@ public class WebSecurityConfig {
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config); // Aplica CORS em todas as rotas
         return source;

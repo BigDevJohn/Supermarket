@@ -9,17 +9,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 
-import jv.supermarket.DTOs.request.ProdutoRequestDTO;
-import jv.supermarket.entities.Carrinho;
-import jv.supermarket.entities.Categoria;
-import jv.supermarket.entities.Produto;
-import jv.supermarket.entities.Usuario;
-import jv.supermarket.services.CarrinhoItemService;
-import jv.supermarket.services.CarrinhoService;
-import jv.supermarket.services.CategoriaService;
-import jv.supermarket.services.PedidoService;
-import jv.supermarket.services.ProdutoService;
-import jv.supermarket.services.UsuarioService;
+import jv.supermarket.cart.Carrinho;
+import jv.supermarket.cart.CarrinhoItemService;
+import jv.supermarket.cart.CarrinhoService;
+import jv.supermarket.category.Categoria;
+import jv.supermarket.category.CategoriaService;
+import jv.supermarket.order.PedidoService;
+import jv.supermarket.product.Produto;
+import jv.supermarket.product.ProdutoRequestDTO;
+import jv.supermarket.product.ProdutoService;
+import jv.supermarket.user.Usuario;
+import jv.supermarket.user.UsuarioService;
 
 @Configuration
 @Profile("test")

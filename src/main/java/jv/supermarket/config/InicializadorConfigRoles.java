@@ -5,10 +5,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
-import jv.supermarket.entities.Role;
-import jv.supermarket.entities.Usuario;
-import jv.supermarket.repositories.RoleRepository;
-import jv.supermarket.services.UsuarioService;
+import jv.supermarket.user.Role;
+import jv.supermarket.user.RoleRepository;
+import jv.supermarket.user.Usuario;
+import jv.supermarket.user.UsuarioService;
 
 @Configuration
 @Order(1)

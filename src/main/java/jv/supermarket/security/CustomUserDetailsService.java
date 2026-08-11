@@ -6,8 +6,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import jv.supermarket.entities.Usuario;
-import jv.supermarket.services.UsuarioService;
+import jv.supermarket.user.Usuario;
+import jv.supermarket.user.UsuarioService;
 
 public class CustomUserDetailsService implements UserDetailsService {
 

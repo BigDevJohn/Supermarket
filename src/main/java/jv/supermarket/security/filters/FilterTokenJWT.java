@@ -15,20 +15,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jv.supermarket.entities.Role;
-import jv.supermarket.entities.Usuario;
-import jv.supermarket.exceptions.ResourceNotFoundException;
-import jv.supermarket.repositories.UsuarioRepository;
-import jv.supermarket.security.JWT.TokenService;
+import jv.supermarket.auth.TokenService;
+import jv.supermarket.shared.customexception.ResourceNotFoundException;
+import jv.supermarket.user.Role;
+import jv.supermarket.user.Usuario;
+import jv.supermarket.user.UsuarioRepository;
 
 @Component
 public class FilterTokenJWT extends OncePerRequestFilter {
 
-    @Autowired
-    private UsuarioRepository userRepo;
+    private final UsuarioRepository userRepo;
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
+
+    FilterTokenJWT(UsuarioRepository userRepo, TokenService tokenService) {
+        this.userRepo = userRepo;
+        this.tokenService = tokenService;
+    }
 
     @SuppressWarnings("null")
     @Override

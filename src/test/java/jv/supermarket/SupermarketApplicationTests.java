@@ -44,7 +44,7 @@ public class SupermarketApplicationTests {
 	public void testProdutoGetWithAuth() throws Exception {
 		mvc.perform(get(url_padrao + "produto/1")).andExpect(status().isOk()).andExpect(
 				content().string(
-						"{\"id\":1,\"nome\":\"Smartphone\",\"marca\":\"Samsung\",\"preco\":3000.00,\"estoque\":20,\"descricao\":\"O melhor da Samsung\",\"categorias\":[{\"id\":2,\"nome\":\"Smartphones\"},{\"id\":4,\"nome\":\"EletrÃ´nicos\"}]}"));
+						"{\"id\":1,\"nome\":\"Smartphone\",\"marca\":\"Samsung\",\"preco\":3000.00,\"estoque\":20,\"descricao\":\"O melhor da Samsung\",\"disponivel\":true,\"categorias\":[{\"id\":2,\"nome\":\"Smartphones\"},{\"id\":4,\"nome\":\"EletrÃ´nicos\"}],\"imagens\":[]}"));
 	}
 
 	@Test

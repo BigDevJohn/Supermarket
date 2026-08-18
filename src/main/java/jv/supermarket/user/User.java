@@ -17,12 +17,14 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jv.supermarket.cart.Cart;
 import jv.supermarket.order.Order;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id

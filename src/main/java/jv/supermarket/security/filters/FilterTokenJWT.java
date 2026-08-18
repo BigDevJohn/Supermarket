@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,43 +17,41 @@ import jakarta.servlet.http.HttpServletResponse;
 import jv.supermarket.auth.TokenService;
 import jv.supermarket.shared.customexception.ResourceNotFoundException;
 import jv.supermarket.user.Role;
-import jv.supermarket.user.Usuario;
-import jv.supermarket.user.UsuarioRepository;
+import jv.supermarket.user.User;
+import jv.supermarket.user.UserRepository;
 
 @Component
 public class FilterTokenJWT extends OncePerRequestFilter {
 
-    private final UsuarioRepository userRepo;
-
+    private final UserRepository userRepository;
     private final TokenService tokenService;
 
-    FilterTokenJWT(UsuarioRepository userRepo, TokenService tokenService) {
-        this.userRepo = userRepo;
+    FilterTokenJWT(UserRepository userRepository, TokenService tokenService) {
+        this.userRepository = userRepository;
         this.tokenService = tokenService;
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String token = this.recoverToken(request);
         if (token != null) {
-            String login = tokenService.validarToken(token);
+            String login = tokenService.validateToken(token);
 
             if (login != null) {
-                Usuario user = userRepo.findByEmail(login);
+                User user = userRepository.findByEmail(login);
 
                 if (user == null) {
-                    throw new ResourceNotFoundException("usuário não encontrado com o email: " + login);
+                    throw new ResourceNotFoundException("User not found with email: " + login);
                 }
                 Set<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getNome()))
+                        .map(role -> new SimpleGrantedAuthority(role.getName()))
                         .collect(Collectors.toSet());
 
-                System.out.println("Usuário autenticado: " + login);
-                System.out.println("Roles do usuário autenticado: " +
-                        user.getRoles().stream().map(Role::getNome).collect(Collectors.toList()));
+                System.out.println("Authenticated user: " + login);
+                System.out.println("User roles: " +
+                        user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
                         authorities);
@@ -66,7 +63,6 @@ public class FilterTokenJWT extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    @SuppressWarnings("null")
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();

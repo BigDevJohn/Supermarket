@@ -25,118 +25,117 @@ public class SupermarketApplicationTests {
 	@Autowired
 	MockMvc mvc;
 
-	private final String url_padrao = "/supermarket/";
+	private final String baseUrl = "/supermarket/";
 
 	@Test
-	public void testProdutoWithoutAuth_Forbidden() throws Exception {
-		mvc.perform(get(url_padrao + "produto/all")).andExpect(status().isForbidden());
+	public void testProductWithoutAuth_Forbidden() throws Exception {
+		mvc.perform(get(baseUrl + "produto/all")).andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
-	public void testProdutoWithAuth() throws Exception {
-		mvc.perform(get(url_padrao + "produto/all")).andExpect(status().isOk());
+	public void testProductWithAuth() throws Exception {
+		mvc.perform(get(baseUrl + "produto/all")).andExpect(status().isOk());
 	}
 
 	@Test
-	// @WithMockUser(roles = { "USER" })
 	@WithUserDetails("admin@gmail.com")
-	public void testProdutoGetWithAuth() throws Exception {
-		mvc.perform(get(url_padrao + "produto/1")).andExpect(status().isOk()).andExpect(
+	public void testProductGetWithAuth() throws Exception {
+		mvc.perform(get(baseUrl + "produto/1")).andExpect(status().isOk()).andExpect(
 				content().string(
-						"{\"id\":1,\"nome\":\"Smartphone\",\"marca\":\"Samsung\",\"preco\":3000.00,\"estoque\":20,\"descricao\":\"O melhor da Samsung\",\"disponivel\":true,\"categorias\":[{\"id\":2,\"nome\":\"Smartphones\"},{\"id\":4,\"nome\":\"EletrÃ´nicos\"}],\"imagens\":[],\"disponivel\":true,\"id\":1}"));
+						"{\"id\":1,\"name\":\"Smartphone\",\"brand\":\"Samsung\",\"price\":3000.00,\"stock\":20,\"description\":\"O melhor da Samsung\",\"available\":true,\"categories\":[{\"id\":2,\"name\":\"Smartphones\"},{\"id\":4,\"name\":\"Eletrônicos\"}],\"images\":[],\"available\":true,\"id\":1}"));
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
-	public void testSaveProdutoWithAuth() throws Exception {
-		// Corpo da requisição em JSON
-		String produtoJson = """
+	public void testSaveProductWithAuth() throws Exception {
+		String productJson = """
 				    {
-				        "nome": "Smartphone",
-				        "marca": "LG",
-				        "preco": 3000,
-				        "estoque": 20,
-				        "descricao": "O melhor da Samsung",
-				        "categorias": ["Smartphones", "Eletrônicos"]
+				        "name": "Smartphone",
+				        "brand": "LG",
+				        "price": 3000,
+				        "stock": 20,
+				        "description": "O melhor da Samsung",
+				        "categories": ["Smartphones", "Eletrônicos"]
 				    }
 				""";
 
-		// Executando a requisição POST
 		mvc.perform(post("/supermarket/produto/save")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(produtoJson)
-				.with(csrf())) // Inclui CSRF para endpoints protegidos
-				.andExpect(status().isCreated()) // Verifica se o status é 201 Created
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON)) // Verifica se a resposta é JSON
-				.andExpect(jsonPath("$.nome").value("Smartphone")) // Verifica o nome no JSON de resposta
-				.andExpect(jsonPath("$.marca").value("LG")); // Verifica a marca no JSON de resposta
+				.content(productJson)
+				.with(csrf()))
+				.andExpect(status().isCreated())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.name").value("Smartphone"))
+				.andExpect(jsonPath("$.brand").value("LG"));
 	}
+
 	@Test
 	@WithUserDetails("admin@gmail.com")
-	public void testUpdateProdutoWithAuth() throws Exception {
-		String produtoJson = """
+	public void testUpdateProductWithAuth() throws Exception {
+		String productJson = """
 				    {
-				        "nome": "Smartphone",
-				        "marca": "LG",
-				        "preco": 3000,
-				        "estoque": 30,
-				        "descricao": "O melhor da Samsung"
+				        "name": "Smartphone",
+				        "brand": "LG",
+				        "price": 3000,
+				        "stock": 30,
+				        "description": "O melhor da Samsung"
 				    }
 				""";
 
 		mvc.perform(put("/supermarket/produto/1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(produtoJson)
-				.with(csrf())) // Inclui CSRF para endpoints protegidos
-				.andExpect(status().isOk()) // Verifica se o status é 201 Created
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON)) // Verifica se a resposta é JSON
-				.andExpect(jsonPath("$.nome").value("Smartphone")) // Verifica o nome no JSON de resposta
-				.andExpect(jsonPath("$.estoque").value("30")); // Verifica a marca no JSON de resposta
+				.content(productJson)
+				.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.name").value("Smartphone"))
+				.andExpect(jsonPath("$.stock").value("30"));
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
-	public void testDeleteProdutoWithAuth() throws Exception {
-        mvc.perform(delete("/supermarket/produto/4")
-                .with(csrf())) // 
-                .andExpect(status().isOk()); 
-    }
-
-	@Test
-	@WithUserDetails("admin@gmail.com")
-	public void testCreateCategoria() throws Exception {
-		String jsonEnviar ="""
-				{
-                    "nome": "Ferramentas"
-                }
-				""";
-				String jsonReceber ="""
-				{
-				    "id": 5,
-                    "nome": "Ferramentas"
-                }
-				""";
-			mvc.perform(post("/supermarket/categoria/save")
-				.contentType(MediaType.APPLICATION_JSON) 
-				.content(jsonEnviar) 
-				.with(csrf())) 
-				.andExpect(status().isCreated()) 
-				.andExpect(content().json(jsonReceber));
-	}
-
-	@Test
-	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
-	public void testAddItemCarrinho() throws Exception {
-		mvc.perform(post(url_padrao+"/carrinho/addItem/1")
-				.queryParam("quantidade","2")
+	public void testDeleteProductWithAuth() throws Exception {
+		mvc.perform(delete("/supermarket/produto/4")
 				.with(csrf()))
 				.andExpect(status().isOk());
 	}
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
+	public void testCreateCategory() throws Exception {
+		String jsonSend = """
+				{
+                    "name": "Ferramentas"
+                }
+				""";
+		String jsonExpect = """
+				{
+				    "id": 5,
+                    "name": "Ferramentas"
+                }
+				""";
+		mvc.perform(post("/supermarket/categoria/save")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(jsonSend)
+				.with(csrf()))
+				.andExpect(status().isCreated())
+				.andExpect(content().json(jsonExpect));
+	}
+
 	@Test
 	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
-	public void testCriarPedido() throws Exception {
-		mvc.perform(post(url_padrao+"/pedido/criar")
+	public void testAddCartItem() throws Exception {
+		mvc.perform(post(baseUrl + "/carrinho/addItem/1")
+				.queryParam("quantity", "2")
+				.with(csrf()))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
+	public void testCreateOrder() throws Exception {
+		mvc.perform(post(baseUrl + "/pedido/criar")
 				.with(csrf()))
 				.andExpect(status().isCreated());
 	}

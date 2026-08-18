@@ -1,6 +1,5 @@
 package jv.supermarket.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,63 +14,64 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jv.supermarket.shared.Mensagem;
+import jv.supermarket.shared.ApiError;
 import jv.supermarket.shared.customexception.BadAuthRequestException;
-import jv.supermarket.user.Usuario;
-import jv.supermarket.user.UsuarioService;
+import jv.supermarket.user.User;
+import jv.supermarket.user.UserService;
 
 @RestController
 @RequestMapping("/supermarket/auth")
 public class AuthController {
-    
-    @Autowired
-    TokenService tokenService;
 
-    @Autowired
-    UsuarioService userService;
+    final TokenService tokenService;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    final UserService userService;
 
-    @Operation(summary = "Login dos usuarios", description="Recebe o email e a senha, e retorna um JWT Token para o usuario")
+    final PasswordEncoder passwordEncoder;
+
+    AuthController(TokenService tokenService, PasswordEncoder passwordEncoder, UserService userService) {
+        this.tokenService = tokenService;
+        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
+    }
+
+    @Operation(summary = "User login", description = "Receives email and password and returns a JWT token")
     @ApiResponses({
         @ApiResponse(responseCode = "200",
-            description = "Usuário logado com sucesso",
+            description = "User logged in successfully",
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = AuthResponseDTO.class))),
         @ApiResponse(responseCode = "400",
-            description = "Erro ao realizar login: email ou senha incorreta",
+            description = "Login failed: incorrect email or password",
             content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = Mensagem.class)))
+                schema = @Schema(implementation = ApiError.class)))
     })
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthLoginRequestDTO dto) {
-        Usuario user = userService.getByEmail(dto.email());
+        User user = userService.getByEmail(dto.email());
 
-        if (passwordEncoder.matches(dto.senha(), user.getSenha())) {
-            String token = tokenService.gerarToken(user);
-
-            return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDTO(user.getNome(), token));
+        if (passwordEncoder.matches(dto.password(), user.getPassword())) {
+            String token = tokenService.generateToken(user);
+            return ResponseEntity.status(HttpStatus.OK).body(new AuthResponseDTO(user.getName(), token));
         }
-        throw new BadAuthRequestException("Erro ao realizar login: email ou senha incorreta");
-
+        throw new BadAuthRequestException("Login failed: incorrect email or password");
     }
 
-    @Operation(summary = "Registro dos clientes", description="Recebe os dados do novo cliente, e retorna um JWT Token para o mesmo")
+    @Operation(summary = "Client registration", description = "Receives the new client's data and returns a JWT token")
     @ApiResponses({
         @ApiResponse(responseCode = "201",
-        description = "Cliente registrado com sucesso",
+            description = "Client registered successfully",
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = AuthResponseDTO.class))),
         @ApiResponse(responseCode = "400",
-            description = "Erro ao realizar registro: Já existe um usuário com esse email",
-            content= @Content(mediaType = "application/json",
-                schema = @Schema(implementation = Mensagem.class)))
+            description = "Registration failed: a user with this email already exists",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ApiError.class)))
     })
-    @PostMapping("/registrar")
-    public ResponseEntity<AuthResponseDTO> saveCliente(@RequestBody @Valid Usuario user){
-        Usuario usuario = userService.saveCliente(user);
-        String token = tokenService.gerarToken(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(usuario.getNome(),token));
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponseDTO> registerClient(@RequestBody @Valid User user) {
+        User savedUser = userService.saveClient(user);
+        String token = tokenService.generateToken(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(savedUser.getName(), token));
     }
 }

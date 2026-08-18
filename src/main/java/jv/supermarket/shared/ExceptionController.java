@@ -22,100 +22,86 @@ import jv.supermarket.shared.customexception.ResourceNotFoundException;
 public class ExceptionController {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Mensagem> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-        String erro = "Recurso não encontrado";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
-
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Resource not found", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
     }
 
     @ExceptionHandler(AlreadyExistException.class)
-    public ResponseEntity<Mensagem> alredyExist(AlreadyExistException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> alreadyExists(AlreadyExistException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.CONFLICT;
-        String erro = "Recurso já existe";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
-
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Resource already exists", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
     }
 
     @ExceptionHandler(ImageSavingException.class)
-    public ResponseEntity<Mensagem> salvamentoDeImagem(ImageSavingException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> imageSavingError(ImageSavingException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        String erro = "Problemas com imagens";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro,request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Image error", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Mensagem> argumentoInvalido(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> invalidArgument(MethodArgumentNotValidException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-
-        String erro = "Problema ao validar valores: ";
-
-        ArrayList<String> detalhes = new ArrayList<String>();
-
+        ArrayList<String> details = new ArrayList<>();
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            detalhes.add(fieldError.getDefaultMessage());
+            details.add(fieldError.getDefaultMessage());
         }
-
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro,request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
+        ApiError error = new ApiError(Instant.now(), status.value(), "Validation error", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
     }
 
     @ExceptionHandler(OutOfStockException.class)
-    public ResponseEntity<Mensagem> estoqueInsuficiente(OutOfStockException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> outOfStock(OutOfStockException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String erro = "Estoque insuficiente";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Insufficient stock", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Mensagem> argumentoInvalido(IllegalArgumentException e, HttpServletRequest request) {
+    public ResponseEntity<ApiError> illegalArgument(IllegalArgumentException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
-        String erro = "Argumento inválido";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
-    }
-    
-    @ExceptionHandler(BadAuthRequestException.class)
-    public ResponseEntity<Mensagem> erroLogin(IllegalArgumentException e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        String erro = "Erro com autenticação";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
-    }
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Mensagem> acessoNegado(AccessDeniedException e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        String erro = "Erro ao acessar recurso";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
-    }
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Mensagem> redundanciaAoMudarDisponibilidade(IllegalStateException e, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.CONFLICT;
-        String erro = "Mudança desnecessária de estado";
-        ArrayList<String> detalhes = new ArrayList<String>();
-        detalhes.add(e.getMessage());
-        Mensagem mensagem = new Mensagem(Instant.now(), status.value(), erro, request.getRequestURI(), detalhes);
-        return ResponseEntity.status(status).body(mensagem);
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Invalid argument", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
     }
 
-    
+    @ExceptionHandler(BadAuthRequestException.class)
+    public ResponseEntity<ApiError> authError(IllegalArgumentException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Authentication error", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> accessDenied(AccessDeniedException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Access denied", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiError> redundantStateChange(IllegalStateException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+        ArrayList<String> details = new ArrayList<>();
+        details.add(e.getMessage());
+        ApiError error = new ApiError(Instant.now(), status.value(), "Unnecessary state change", request.getRequestURI(), details);
+        return ResponseEntity.status(status).body(error);
+    }
+
 }

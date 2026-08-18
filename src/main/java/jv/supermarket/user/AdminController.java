@@ -1,6 +1,5 @@
 package jv.supermarket.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,33 +15,36 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jv.supermarket.auth.AuthResponseDTO;
 import jv.supermarket.auth.TokenService;
-import jv.supermarket.shared.Mensagem;
+import jv.supermarket.shared.ApiError;
 
 @RestController
 @RequestMapping("/supermarket/admin")
 public class AdminController {
 
-    @Autowired
-    UsuarioService userService;
+    final UserService userService;
 
-    @Autowired
-    TokenService tokenService;
-    
-    @Operation(summary = "Registro dos Funcionarios", description="Recebe os dados do novo funcionario, e retorna um JWT Token para o mesmo")
+    final TokenService tokenService;
+
+    AdminController(UserService userService, TokenService tokenService) {
+        this.userService = userService;
+        this.tokenService = tokenService;
+    }
+
+    @Operation(summary = "Employee registration", description = "Receives the new employee's data and returns a JWT token")
     @ApiResponses({
         @ApiResponse(responseCode = "201",
-        description = "Funcionario registrado com sucesso",
+            description = "Employee registered successfully",
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = AuthResponseDTO.class))),
         @ApiResponse(responseCode = "400",
-            description = "Erro ao realizar registro: Já existe um usuário com esse email",
-            content= @Content(mediaType = "application/json",
-                schema = @Schema(implementation = Mensagem.class)))
+            description = "Registration failed: a user with this email already exists",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = ApiError.class)))
     })
     @PostMapping("/criarFuncionario")
-    public ResponseEntity<AuthResponseDTO> saveUsuario(@RequestBody @Valid Usuario user){
-        Usuario usuario = userService.saveFuncionario(user);
-        String token = tokenService.gerarToken(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(usuario.getNome(),token));
+    public ResponseEntity<AuthResponseDTO> saveEmployee(@RequestBody @Valid User user) {
+        User savedUser = userService.saveEmployee(user);
+        String token = tokenService.generateToken(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponseDTO(savedUser.getName(), token));
     }
 }

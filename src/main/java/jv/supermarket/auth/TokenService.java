@@ -10,38 +10,35 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import jv.supermarket.user.Usuario;
-
+import jv.supermarket.user.User;
 
 @Service
 public class TokenService {
 
     @Value("${api.security.secret}")
-    private String segredo;
+    private String secret;
 
-    public String gerarToken(Usuario user) {
-        Algorithm algoritmo = Algorithm.HMAC256(segredo);
+    public String generateToken(User user) {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
 
-        String token = JWT.create()
+        return JWT.create()
                 .withSubject(user.getEmail())
                 .withIssuer("Supermarket API")
-                .withExpiresAt(gerarTempoDeExpiracao())
-                .sign(algoritmo);
-
-        return token;
+                .withExpiresAt(generateExpirationTime())
+                .sign(algorithm);
     }
 
-    public String validarToken(String token){
-            Algorithm algoritmo = Algorithm.HMAC256(segredo);
-            
-            return JWT.require(algoritmo)
-                    .withIssuer("Supermarket API")
-                    .build()
-                    .verify(token)
-                    .getSubject();
+    public String validateToken(String token) {
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+
+        return JWT.require(algorithm)
+                .withIssuer("Supermarket API")
+                .build()
+                .verify(token)
+                .getSubject();
     }
 
-    private Instant gerarTempoDeExpiracao(){
+    private Instant generateExpirationTime() {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
 }

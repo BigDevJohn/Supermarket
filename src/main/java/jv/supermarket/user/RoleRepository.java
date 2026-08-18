@@ -2,10 +2,10 @@ package jv.supermarket.user;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoleRepository extends JpaRepository<Role, Long>{
+public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    Role findByNome(String string);
+    Role findByName(String name);
 
-    boolean existsByNome(String roleName);
-    
+    boolean existsByName(String name);
+
 }

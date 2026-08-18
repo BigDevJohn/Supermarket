@@ -66,11 +66,11 @@ public class WebSecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         String url_auth = "/supermarket/auth/";
-        String url_produtos = "/supermarket/produto/";
-        String url_categorias = "/supermarket/categoria/";
-        String url_imagens = "/supermarket/imagem/";
-        String url_carrinho = "/supermarket/carrinho/";
-        String url_pedido = "/supermarket/pedido/";
+        String url_products = "/supermarket/product/";
+        String url_categories = "/supermarket/category/";
+        String url_images = "/supermarket/image/";
+        String url_carts = "/supermarket/cart/";
+        String url_orders = "/supermarket/order/";
         String url_admin = "/supermarket/admin/";
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -87,55 +87,55 @@ public class WebSecurityConfig {
                         "/webjars/**"        // Recursos estáticos
                 ).permitAll()
                 
-                .requestMatchers(HttpMethod.GET, url_produtos+"**")
+                .requestMatchers(HttpMethod.GET, url_products+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
-                .requestMatchers(HttpMethod.POST, url_produtos + "save")
+                .requestMatchers(HttpMethod.POST, url_products + "save")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, url_produtos + "**")
+                .requestMatchers(HttpMethod.PUT, url_products + "**")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, url_produtos + "**")
+                .requestMatchers(HttpMethod.DELETE, url_products + "**")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, url_produtos+"{id:\\d+}/**")
+                .requestMatchers(HttpMethod.PUT, url_products+"{id:\\d+}/**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO")
                 
-                .requestMatchers(HttpMethod.POST, url_categorias + "save")
+                .requestMatchers(HttpMethod.POST, url_categories + "save")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, url_categorias +"{id:\\d+}/addEstoque")
+                .requestMatchers(HttpMethod.PUT, url_categories +"{id:\\d+}/addStock")
                     .hasAnyRole("ADMIN", "FUNCIONARIO")
-                .requestMatchers(HttpMethod.PUT, url_categorias +"{id:\\d+}")
+                .requestMatchers(HttpMethod.PUT, url_categories +"{id:\\d+}")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, url_categorias +"{id:\\d+}")
+                .requestMatchers(HttpMethod.DELETE, url_categories +"{id:\\d+}")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, url_categorias +"**")
+                .requestMatchers(HttpMethod.GET, url_categories +"**")
                     .hasAnyRole("ADMIN", "CLIENTE", "FUNCIONARIO")
                     
-                .requestMatchers(HttpMethod.POST, url_imagens+"upload")
+                .requestMatchers(HttpMethod.POST, url_images+"upload")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, url_imagens +"{id:\\d+}")
+                .requestMatchers(HttpMethod.PUT, url_images +"{id:\\d+}")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, url_imagens +"{id:\\d+}")
+                .requestMatchers(HttpMethod.DELETE, url_images +"{id:\\d+}")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, url_imagens+"**")
+                .requestMatchers(HttpMethod.GET, url_images+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
                     
-                .requestMatchers(HttpMethod.GET, url_carrinho+"show")
+                .requestMatchers(HttpMethod.GET, url_carts+"show")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.POST, url_carrinho+"addItem/{itemId:\\d+}")
+                .requestMatchers(HttpMethod.POST, url_carts+"addItem/{itemId:\\d+}")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, url_carrinho+"removeItem/{itemId:\\d+}")
+                .requestMatchers(HttpMethod.DELETE, url_carts+"removeItem/{itemId:\\d+}")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.PUT, url_carrinho+"item/{itemId:\\d+}/update")
+                .requestMatchers(HttpMethod.PUT, url_carts+"item/{itemId:\\d+}/update")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, url_carrinho+"clear")
+                .requestMatchers(HttpMethod.DELETE, url_carts+"clear")
                     .hasRole("CLIENTE")
                     
-                .requestMatchers(HttpMethod.POST, url_pedido+"criar")
+                .requestMatchers(HttpMethod.POST, url_orders+"criar")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.GET, url_pedido+"{id:\\d+}")
+                .requestMatchers(HttpMethod.GET, url_orders+"{id:\\d+}")
                     .hasAnyRole("ADMIN","CLIENTE")
-                .requestMatchers(HttpMethod.GET, url_pedido+"by-user")
+                .requestMatchers(HttpMethod.GET, url_orders+"by-user")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, url_pedido+"cancelar")
+                .requestMatchers(HttpMethod.DELETE, url_orders+"cancelar")
                     .hasRole("CLIENTE")
                     
                 .requestMatchers(HttpMethod.POST, url_admin+"criarFuncionario")

@@ -199,18 +199,4 @@ public class ProductController {
         productService.makeUnavailable(id);
         return ResponseEntity.ok(new Response(Instant.now(), "Product made unavailable successfully."));
     }
-
-    @Operation(summary = "Increases product stock", description = "Increases the stock of a product by a given quantity")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Product stock updated successfully",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDTO.class))),
-        @ApiResponse(responseCode = "404", description = "No product found with the given id",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
-    })
-    @PutMapping("/{id}/addEstoque")
-    public ResponseEntity<ProductDTO> increaseStock(@PathVariable Long id,
-            @Parameter(description = "Quantity to add to the product stock") @RequestParam int quantity) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.addProductStock(quantity, id));
-    }
-
 }

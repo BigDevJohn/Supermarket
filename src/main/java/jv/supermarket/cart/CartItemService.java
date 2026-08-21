@@ -7,6 +7,7 @@ import jv.supermarket.product.Product;
 import jv.supermarket.product.ProductService;
 import jv.supermarket.shared.customexception.OutOfStockException;
 import jv.supermarket.shared.customexception.ResourceNotFoundException;
+import jv.supermarket.stock.StockService;
 
 @Service
 public class CartItemService {
@@ -17,23 +18,23 @@ public class CartItemService {
 
     final CartService cartService;
 
-    CartItemService(CartService cartService, ProductService productService, CartItemRepository cartItemRepository) {
+    final StockService stockService;
+
+    CartItemService(CartService cartService, ProductService productService, CartItemRepository cartItemRepository, StockService stockService) {
         this.cartService = cartService;
         this.productService = productService;
         this.cartItemRepository = cartItemRepository;
+        this.stockService = stockService;
     }
 
     @Transactional
     public void addItemToCart(Long productId, int quantity, Long cartId) {
         Product product = productService.getProductById(productId);
 
-        if (!isQuantityAllowed(quantity, product.getStock())) {
+        if (!stockService.isStockAvailable(quantity, productId)) {
             throw new OutOfStockException("The product stock is insufficient for the requested quantity");
         }
-
-        if (!cartService.existsById(cartId)) {
-            throw new ResourceNotFoundException("Cart not found with id: " + cartId);
-        }
+        
         if (quantity < 1) {
             throw new IllegalArgumentException("Item quantity must be greater than 0");
         }
@@ -79,13 +80,11 @@ public class CartItemService {
     public void updateItemQuantity(Long cartId, Long productId, int quantity) {
         CartItem item = getCartItem(cartId, productId);
 
-        int currentStock = productService.getProductById(productId).getStock();
-
         if (quantity < 1) {
             throw new IllegalArgumentException("Item quantity must be greater than 0");
         }
 
-        if (!isQuantityAllowed(quantity, currentStock)) {
+        if (!stockService.isStockAvailable(quantity, productId)) {
             throw new OutOfStockException("The product stock is insufficient for the requested quantity");
         }
 
@@ -101,10 +100,6 @@ public class CartItemService {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No product with id: " + productId + " found in cart with id: " + cartId));
-    }
-
-    private boolean isQuantityAllowed(int quantity, int productStock) {
-        return quantity <= productStock;
     }
 
 }

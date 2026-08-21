@@ -21,7 +21,7 @@ public class StockService {
         return new StockDTO(stock.getQuantity());
     }
 
-    public Stock createStock(Integer quantity, Product product) {
+    public Stock buildStock(Integer quantity, Product product) {
         Stock stock = new Stock(quantity, product);
         return stock;
     }

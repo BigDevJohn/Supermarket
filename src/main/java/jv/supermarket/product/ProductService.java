@@ -62,7 +62,7 @@ public class ProductService {
         product.setPrice(dto.getPrice());
         product.setDescription(dto.getDescription());
 
-        Stock stock = stockService.createStock(dto.getStock(), product);
+        Stock stock = stockService.buildStock(dto.getStock(), product);
 
         product.setStock(stock);
 

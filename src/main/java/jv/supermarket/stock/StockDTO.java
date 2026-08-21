@@ -1,5 +1,5 @@
 package jv.supermarket.stock;
 
-public record StockDTO(int quantity) {
+public record StockDTO(Integer quantity) {
     
 }

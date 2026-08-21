@@ -67,6 +67,7 @@ public class WebSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         String url_auth = "/supermarket/auth/";
         String url_products = "/supermarket/product/";
+        String url_stocks = "/supermarket/stock/product/";
         String url_categories = "/supermarket/category/";
         String url_images = "/supermarket/image/";
         String url_carts = "/supermarket/cart/";
@@ -97,11 +98,15 @@ public class WebSecurityConfig {
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, url_products+"{id:\\d+}/**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO")
+
+                .requestMatchers(HttpMethod.GET, url_stocks+"**")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
+
+                .requestMatchers(HttpMethod.PUT, url_stocks+"**")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO")
                 
                 .requestMatchers(HttpMethod.POST, url_categories + "save")
                     .hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, url_categories +"{id:\\d+}/addStock")
-                    .hasAnyRole("ADMIN", "FUNCIONARIO")
                 .requestMatchers(HttpMethod.PUT, url_categories +"{id:\\d+}")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_categories +"{id:\\d+}")
@@ -129,7 +134,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, url_carts+"clear")
                     .hasRole("CLIENTE")
                     
-                .requestMatchers(HttpMethod.POST, url_orders+"criar")
+                .requestMatchers(HttpMethod.POST, url_orders+"create")
                     .hasRole("CLIENTE")
                 .requestMatchers(HttpMethod.GET, url_orders+"{id:\\d+}")
                     .hasAnyRole("ADMIN","CLIENTE")

@@ -85,6 +85,52 @@ public class SupermarketApplicationTests {
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
+	public void testGetStockWithAuth() throws Exception {
+		mvc.perform(get("/supermarket/stock/1"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.quantity").value(20));
+	}
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
+	public void testEntryStockWithAuth() throws Exception {
+		String stockJson = """
+				    {
+				        "quantity": 5
+				    }
+				""";
+
+		mvc.perform(put("/supermarket/stock/2/entries")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(stockJson)
+				.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.quantity").value(37));
+	}
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
+	public void testExitStockWithAuth() throws Exception {
+		String stockJson = """
+				    {
+				        "quantity": 5
+				    }
+				""";
+
+		mvc.perform(put("/supermarket/stock/2/exits")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(stockJson)
+				.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.quantity").value(27));
+	}
+
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
 	public void testUpdateProductWithAuth() throws Exception {
 		String productJson = """
 				    {
@@ -102,7 +148,7 @@ public class SupermarketApplicationTests {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.name").value("Smartphone"))
-				.andExpect(jsonPath("$.stock").value("30"));
+				.andExpect(jsonPath("$.brand").value("LG"));
 	}
 
 	@Test

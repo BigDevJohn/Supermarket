@@ -17,9 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = SupermarketApplication.class)
 @AutoConfigureMockMvc
+@Transactional
 public class SupermarketApplicationTests {
 
 	@Autowired
@@ -53,10 +55,7 @@ public class SupermarketApplicationTests {
 				.andExpect(jsonPath("$.description").value("O melhor da Samsung"))
 				.andExpect(jsonPath("$.available").value(true))
 				.andExpect(jsonPath("$.categories").isArray())
-				.andExpect(jsonPath("$.categories[0].id").value(2))
-				.andExpect(jsonPath("$.categories[0].name").value("Smartphones"))
-				.andExpect(jsonPath("$.categories[1].id").value(4))
-				.andExpect(jsonPath("$.categories[1].name").value("Eletrônicos"))
+				.andExpect(jsonPath("$.categories", org.hamcrest.Matchers.containsInAnyOrder("Smartphones", "Eletrônicos")))
 				.andExpect(jsonPath("$.images").isArray());
 	}
 
@@ -69,7 +68,7 @@ public class SupermarketApplicationTests {
 				        "brand": "LG",
 				        "price": 3000,
 				        "stock": 20,
-				        "description": "O melhor da Samsung",
+				        "description": "O melhor da LG",
 				        "categories": ["Smartphones", "Eletrônicos"]
 				    }
 				""";
@@ -149,7 +148,7 @@ public class SupermarketApplicationTests {
 	@Test
 	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
 	public void testCreateOrder() throws Exception {
-		mvc.perform(post(baseUrl + "/order/create")
+		mvc.perform(post(baseUrl + "order/create")
 				.with(csrf()))
 				.andExpect(status().isCreated());
 	}

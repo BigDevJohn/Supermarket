@@ -102,7 +102,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, url_stocks+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
 
-                .requestMatchers(HttpMethod.PUT, url_stocks+"**")
+                .requestMatchers(HttpMethod.PUT, url_stocks+"{id:\\d+}/**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO")
                 
                 .requestMatchers(HttpMethod.POST, url_categories + "save")

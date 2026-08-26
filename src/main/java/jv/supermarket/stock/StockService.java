@@ -22,8 +22,10 @@ public class StockService {
     }
 
     public Stock buildStock(Integer quantity, Product product) {
-        Stock stock = new Stock(quantity, product);
-        return stock;
+        if (quantity == null || quantity < 0) {
+            throw new IllegalArgumentException("Initial stock quantity cannot be negative");
+        }
+        return new Stock(quantity, product);
     }
 
     public StockDTO stockEntry(Long productId, Integer quantity) {

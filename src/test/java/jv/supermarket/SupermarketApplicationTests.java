@@ -29,36 +29,36 @@ public class SupermarketApplicationTests {
 
 	@Test
 	public void testProductWithoutAuth_Forbidden() throws Exception {
-		mvc.perform(get(baseUrl + "produto/all"))
-			.andExpect(status().isForbidden());
+		mvc.perform(get(baseUrl + "product/all"))
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
 	public void testProductWithAuth() throws Exception {
-		mvc.perform(get(baseUrl + "produto/all"))
-			.andExpect(status().isOk());
+		mvc.perform(get(baseUrl + "product/all"))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-@WithUserDetails("admin@gmail.com")
-public void testProductGetWithAuth() throws Exception {
-    mvc.perform(get(baseUrl + "product/1"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.name").value("Smartphone"))
-            .andExpect(jsonPath("$.brand").value("Samsung"))
-            .andExpect(jsonPath("$.price").value(3000.00))
-            .andExpect(jsonPath("$.description").value("O melhor da Samsung"))
-            .andExpect(jsonPath("$.available").value(true))
-            .andExpect(jsonPath("$.categories").isArray())
-            .andExpect(jsonPath("$.categories[0].id").value(2))
-            .andExpect(jsonPath("$.categories[0].name").value("Smartphones"))
-            .andExpect(jsonPath("$.categories[1].id").value(4))
-            .andExpect(jsonPath("$.categories[1].name").value("Eletrônicos"))
-            .andExpect(jsonPath("$.images").isArray());
-}
+	@WithUserDetails("admin@gmail.com")
+	public void testProductGetWithAuth() throws Exception {
+		mvc.perform(get(baseUrl + "product/1"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.id").value(1))
+				.andExpect(jsonPath("$.name").value("Smartphone"))
+				.andExpect(jsonPath("$.brand").value("Samsung"))
+				.andExpect(jsonPath("$.price").value(3000.00))
+				.andExpect(jsonPath("$.description").value("O melhor da Samsung"))
+				.andExpect(jsonPath("$.available").value(true))
+				.andExpect(jsonPath("$.categories").isArray())
+				.andExpect(jsonPath("$.categories[0].id").value(2))
+				.andExpect(jsonPath("$.categories[0].name").value("Smartphones"))
+				.andExpect(jsonPath("$.categories[1].id").value(4))
+				.andExpect(jsonPath("$.categories[1].name").value("Eletrônicos"))
+				.andExpect(jsonPath("$.images").isArray());
+	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
@@ -74,7 +74,7 @@ public void testProductGetWithAuth() throws Exception {
 				    }
 				""";
 
-		mvc.perform(post("/supermarket/produto/save")
+		mvc.perform(post("/supermarket/product/save")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(productJson)
 				.with(csrf()))
@@ -97,7 +97,7 @@ public void testProductGetWithAuth() throws Exception {
 				    }
 				""";
 
-		mvc.perform(put("/supermarket/produto/1")
+		mvc.perform(put("/supermarket/product/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(productJson)
 				.with(csrf()))
@@ -110,7 +110,7 @@ public void testProductGetWithAuth() throws Exception {
 	@Test
 	@WithUserDetails("admin@gmail.com")
 	public void testDeleteProductWithAuth() throws Exception {
-		mvc.perform(delete("/supermarket/produto/4")
+		mvc.perform(delete("/supermarket/product/4")
 				.with(csrf()))
 				.andExpect(status().isOk());
 	}
@@ -120,16 +120,16 @@ public void testProductGetWithAuth() throws Exception {
 	public void testCreateCategory() throws Exception {
 		String jsonSend = """
 				{
-                    "name": "Ferramentas"
-                }
+				                "name": "Ferramentas"
+				            }
 				""";
 		String jsonExpect = """
 				{
 				    "id": 5,
-                    "name": "Ferramentas"
-                }
+				                "name": "Ferramentas"
+				            }
 				""";
-		mvc.perform(post("/supermarket/categoria/save")
+		mvc.perform(post("/supermarket/category/save")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(jsonSend)
 				.with(csrf()))
@@ -140,7 +140,7 @@ public void testProductGetWithAuth() throws Exception {
 	@Test
 	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
 	public void testAddCartItem() throws Exception {
-		mvc.perform(post(baseUrl + "/carrinho/addItem/1")
+		mvc.perform(post(baseUrl + "/cart/addItem/1")
 				.queryParam("quantity", "2")
 				.with(csrf()))
 				.andExpect(status().isOk());
@@ -149,7 +149,7 @@ public void testProductGetWithAuth() throws Exception {
 	@Test
 	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
 	public void testCreateOrder() throws Exception {
-		mvc.perform(post(baseUrl + "/pedido/criar")
+		mvc.perform(post(baseUrl + "/order/create")
 				.with(csrf()))
 				.andExpect(status().isCreated());
 	}

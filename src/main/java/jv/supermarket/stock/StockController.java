@@ -17,19 +17,19 @@ public class StockController {
         this.stockService = stockService;
     }
 
-    @GetMapping("/product/{productId}")
-    public StockDTO getProductStock(@PathVariable Long productId) {
-        return stockService.getStockById(productId);
+    @GetMapping("/{stockId}")
+    public StockDTO getProductStock(@PathVariable Long stockId) {
+        return stockService.getStockById(stockId);
     }
 
-    @PutMapping("/product/{productId}/entries")
-    public StockDTO addProductEntries(@RequestBody StockDTO stock, @PathVariable Long productId) {
-        return stockService.stockEntry(productId, stock.quantity());
+    @PutMapping("/{stockId}/entries")
+    public StockDTO addProductEntries(@RequestBody StockDTO stock, @PathVariable Long stockId) {
+        return stockService.stockEntry(stockId, stock.quantity());
     }
 
-    @PutMapping("/product/{productId}/exits")
-    public StockDTO subtractProductStock(@RequestBody StockDTO stock, @PathVariable Long productId) {
-        return stockService.stockExit(productId, stock.quantity());
+    @PutMapping("/{stockId}/exits")
+    public StockDTO subtractProductStock(@RequestBody StockDTO stock, @PathVariable Long stockId) {
+        return stockService.stockExit(stockId, stock.quantity());
     }
 
 }

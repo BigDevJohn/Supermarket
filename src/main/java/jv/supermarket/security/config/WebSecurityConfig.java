@@ -129,16 +129,16 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, url_carts+"clear")
                     .hasRole("CLIENTE")
                     
-                .requestMatchers(HttpMethod.POST, url_orders+"criar")
+                .requestMatchers(HttpMethod.POST, url_orders+"create")
                     .hasRole("CLIENTE")
                 .requestMatchers(HttpMethod.GET, url_orders+"{id:\\d+}")
                     .hasAnyRole("ADMIN","CLIENTE")
                 .requestMatchers(HttpMethod.GET, url_orders+"by-user")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, url_orders+"cancelar")
+                .requestMatchers(HttpMethod.DELETE, url_orders+"cancel")
                     .hasRole("CLIENTE")
                     
-                .requestMatchers(HttpMethod.POST, url_admin+"criarFuncionario")
+                .requestMatchers(HttpMethod.POST, url_admin+"createFunctionary")
                     .hasRole("ADMIN"));
             //@formatter:on
 

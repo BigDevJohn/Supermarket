@@ -30,35 +30,35 @@ public class SupermarketApplicationTests {
 	@Test
 	public void testProductWithoutAuth_Forbidden() throws Exception {
 		mvc.perform(get(baseUrl + "product/all"))
-			.andExpect(status().isForbidden());
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
 	public void testProductWithAuth() throws Exception {
 		mvc.perform(get(baseUrl + "product/all"))
-			.andExpect(status().isOk());
+				.andExpect(status().isOk());
 	}
 
 	@Test
-@WithUserDetails("admin@gmail.com")
-public void testProductGetWithAuth() throws Exception {
-    mvc.perform(get(baseUrl + "product/1"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.name").value("Smartphone"))
-            .andExpect(jsonPath("$.brand").value("Samsung"))
-            .andExpect(jsonPath("$.price").value(3000.00))
-            .andExpect(jsonPath("$.description").value("O melhor da Samsung"))
-            .andExpect(jsonPath("$.available").value(true))
-            .andExpect(jsonPath("$.categories").isArray())
-            .andExpect(jsonPath("$.categories[0].id").value(2))
-            .andExpect(jsonPath("$.categories[0].name").value("Smartphones"))
-            .andExpect(jsonPath("$.categories[1].id").value(4))
-            .andExpect(jsonPath("$.categories[1].name").value("Eletrônicos"))
-            .andExpect(jsonPath("$.images").isArray());
-}
+	@WithUserDetails("admin@gmail.com")
+	public void testProductGetWithAuth() throws Exception {
+		mvc.perform(get(baseUrl + "product/1"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.id").value(1))
+				.andExpect(jsonPath("$.name").value("Smartphone"))
+				.andExpect(jsonPath("$.brand").value("Samsung"))
+				.andExpect(jsonPath("$.price").value(3000.00))
+				.andExpect(jsonPath("$.description").value("O melhor da Samsung"))
+				.andExpect(jsonPath("$.available").value(true))
+				.andExpect(jsonPath("$.categories").isArray())
+				.andExpect(jsonPath("$.categories[0].id").value(2))
+				.andExpect(jsonPath("$.categories[0].name").value("Smartphones"))
+				.andExpect(jsonPath("$.categories[1].id").value(4))
+				.andExpect(jsonPath("$.categories[1].name").value("Eletrônicos"))
+				.andExpect(jsonPath("$.images").isArray());
+	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
@@ -119,14 +119,14 @@ public void testProductGetWithAuth() throws Exception {
 	public void testCreateCategory() throws Exception {
 		String jsonSend = """
 				{
-                    "name": "Ferramentas"
-                }
+				                "name": "Ferramentas"
+				            }
 				""";
 		String jsonExpect = """
 				{
 				    "id": 5,
-                    "name": "Ferramentas"
-                }
+				                "name": "Ferramentas"
+				            }
 				""";
 		mvc.perform(post("/supermarket/category/save")
 				.contentType(MediaType.APPLICATION_JSON)

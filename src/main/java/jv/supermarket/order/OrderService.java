@@ -18,7 +18,6 @@ import jv.supermarket.product.ProductRepository;
 import jv.supermarket.product.ProductService;
 import jv.supermarket.shared.customexception.OutOfStockException;
 import jv.supermarket.shared.customexception.ResourceNotFoundException;
-import jv.supermarket.stock.Stock;
 import jv.supermarket.stock.StockService;
 import jv.supermarket.user.Role;
 import jv.supermarket.user.User;

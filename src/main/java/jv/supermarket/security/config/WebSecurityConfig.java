@@ -92,6 +92,10 @@ public class WebSecurityConfig {
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
                 .requestMatchers(HttpMethod.POST, url_products + "save")
                     .hasRole("ADMIN")
+                    
+                .requestMatchers(HttpMethod.PUT, url_stocks+"{id:\\d+}/**")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO")
+                    
                 .requestMatchers(HttpMethod.PUT, url_products + "**")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, url_products + "**")
@@ -102,8 +106,6 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, url_stocks+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
 
-                .requestMatchers(HttpMethod.PUT, url_stocks+"{id:\\d+}/**")
-                    .hasAnyRole("ADMIN", "FUNCIONARIO")
                 
                 .requestMatchers(HttpMethod.POST, url_categories + "save")
                     .hasRole("ADMIN")

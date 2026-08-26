@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +13,8 @@ import jv.supermarket.category.CategoryRepository;
 import jv.supermarket.image.ImageDTO;
 import jv.supermarket.shared.customexception.AlreadyExistException;
 import jv.supermarket.shared.customexception.ResourceNotFoundException;
+import jv.supermarket.stock.Stock;
+import jv.supermarket.stock.StockService;
 import jv.supermarket.user.User;
 import jv.supermarket.user.UserService;
 
@@ -26,11 +27,14 @@ public class ProductService {
 
     final UserService userService;
 
+    final StockService stockService;
+
     ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,
-            UserService userService) {
+            UserService userService, StockService stockService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.userService = userService;
+        this.stockService = stockService;
     }
 
     private boolean productExists(String name, String brand) {
@@ -53,7 +57,14 @@ public class ProductService {
             throw new AlreadyExistException("A product with this name and brand already exists.");
         }
         Product product = new Product();
-        BeanUtils.copyProperties(dto, product);
+        product.setName(dto.getName());
+        product.setBrand(dto.getBrand());
+        product.setPrice(dto.getPrice());
+        product.setDescription(dto.getDescription());
+
+        Stock stock = stockService.buildStock(dto.getStock(), product);
+
+        product.setStock(stock);
 
         addCategoriesToProduct(product, dto.getCategories());
 
@@ -87,7 +98,6 @@ public class ProductService {
             savedProduct.setName(product.getName());
             savedProduct.setBrand(product.getBrand());
             savedProduct.setPrice(product.getPrice());
-            savedProduct.setStock(product.getStock());
             savedProduct.setDescription(product.getDescription());
 
             return convertToDTO(productRepository.save(savedProduct));
@@ -131,15 +141,6 @@ public class ProductService {
         } else {
             throw new ResourceNotFoundException("Product with id: " + id + " not found");
         }
-    }
-
-    public ProductDTO addProductStock(int quantity, Long id) {
-        if (productRepository.existsById(id)) {
-            Product product = getProductById(id);
-            product.setStock(product.getStock() + quantity);
-            return convertToDTO(productRepository.save(product));
-        }
-        throw new ResourceNotFoundException("Product with id: " + id + " not found");
     }
 
     public List<ProductDTO> getProductsByName(String name) {
@@ -198,7 +199,6 @@ public class ProductService {
         dto.setBrand(product.getBrand());
         dto.setPrice(product.getPrice());
         dto.setDescription(product.getDescription());
-        dto.setStock(product.getStock());
         dto.setAvailable(product.isAvailable());
 
         // Convert Set<Category> → Set<String>

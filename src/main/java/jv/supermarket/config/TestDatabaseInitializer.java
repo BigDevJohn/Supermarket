@@ -3,7 +3,6 @@ package jv.supermarket.config;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,7 +14,6 @@ import jv.supermarket.cart.CartService;
 import jv.supermarket.category.Category;
 import jv.supermarket.category.CategoryService;
 import jv.supermarket.order.OrderService;
-import jv.supermarket.product.Product;
 import jv.supermarket.product.ProductDTO;
 import jv.supermarket.product.ProductRequestDTO;
 import jv.supermarket.product.ProductService;

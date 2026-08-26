@@ -18,6 +18,7 @@ import jv.supermarket.product.ProductRepository;
 import jv.supermarket.product.ProductService;
 import jv.supermarket.shared.customexception.OutOfStockException;
 import jv.supermarket.shared.customexception.ResourceNotFoundException;
+import jv.supermarket.stock.StockService;
 import jv.supermarket.user.Role;
 import jv.supermarket.user.User;
 import jv.supermarket.user.UserService;
@@ -37,14 +38,18 @@ public class OrderService {
 
     final ProductService productService;
 
+    final StockService stockService;
 
-    OrderService(CartService cartService, OrderItemRepository itemRepo, OrderRepository orderRepo, UserService userService, ProductRepository productRepo, ProductService productService) {
+    OrderService(CartService cartService, OrderItemRepository itemRepo, OrderRepository orderRepo,
+            UserService userService, ProductRepository productRepo, ProductService productService,
+            StockService stockService) {
         this.cartService = cartService;
         this.itemRepo = itemRepo;
         this.orderRepo = orderRepo;
         this.userService = userService;
         this.productRepo = productRepo;
         this.productService = productService;
+        this.stockService = stockService;
     }
 
     @Transactional
@@ -126,8 +131,8 @@ public class OrderService {
     private void checkCartStock(Cart cart) {
         for (CartItem item : cart.getItems()) {
             Product product = item.getProduct();
-            int availableStock = product.getStock();
-            if (!isSufficientStock(item.getQuantity(), availableStock)) {
+            int availableStock = stockService.getStockById(product.getId()).quantity();
+            if (item.getQuantity() > availableStock) {
                 int exceededAmount = item.getQuantity() - availableStock;
                 throw new OutOfStockException(
                         "The order for product " + product.getName() + " by brand: " + product.getBrand()
@@ -146,18 +151,12 @@ public class OrderService {
             item.setProduct(product);
             item.setQuantity(cartItem.getQuantity());
 
-            product.setStock(product.getStock() - item.getQuantity());
-
-            productRepo.save(product);
+            stockService.stockExit(product.getId(), cartItem.getQuantity());
 
             items.add(item);
         }
 
         return items;
-    }
-
-    private boolean isSufficientStock(int quantity, int productStock) {
-        return quantity <= productStock;
     }
 
     private OrderItemDTO convertItemToDTO(OrderItem item) {

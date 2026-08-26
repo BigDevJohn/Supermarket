@@ -23,13 +23,13 @@ public class StockController {
     }
 
     @PutMapping("/product/{productId}/entries")
-    public StockDTO addProductEntries(@RequestBody Integer quantity, @PathVariable Long productId) {
-        return stockService.stockEntry(productId, quantity);
+    public StockDTO addProductEntries(@RequestBody StockDTO stock, @PathVariable Long productId) {
+        return stockService.stockEntry(productId, stock.quantity());
     }
 
     @PutMapping("/product/{productId}/exits")
-    public StockDTO subtractProductStock(@RequestBody Integer quantity, @PathVariable Long productId) {
-        return stockService.stockExit(productId, quantity);
+    public StockDTO subtractProductStock(@RequestBody StockDTO stock, @PathVariable Long productId) {
+        return stockService.stockExit(productId, stock.quantity());
     }
 
 }

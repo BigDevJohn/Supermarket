@@ -67,7 +67,7 @@ public class WebSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         String url_auth = "/supermarket/auth/";
         String url_products = "/supermarket/product/";
-        String url_stocks = "/supermarket/stock/product/";
+        String url_stocks = "/supermarket/stock/";
         String url_categories = "/supermarket/category/";
         String url_images = "/supermarket/image/";
         String url_carts = "/supermarket/cart/";
@@ -105,6 +105,9 @@ public class WebSecurityConfig {
 
                 .requestMatchers(HttpMethod.GET, url_stocks+"**")
                     .hasAnyRole("ADMIN", "FUNCIONARIO", "CLIENTE")
+                
+                .requestMatchers(HttpMethod.PUT, url_stocks+"{id:\\d+}/**")
+                    .hasAnyRole("ADMIN", "FUNCIONARIO")
 
                 
                 .requestMatchers(HttpMethod.POST, url_categories + "save")

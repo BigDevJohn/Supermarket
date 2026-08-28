@@ -145,7 +145,7 @@ public class WebSecurityConfig {
                     .hasAnyRole("ADMIN","CLIENTE")
                 .requestMatchers(HttpMethod.GET, url_orders+"by-user")
                     .hasRole("CLIENTE")
-                .requestMatchers(HttpMethod.DELETE, url_orders+"cancel")
+                .requestMatchers(HttpMethod.DELETE, url_orders+"{id:\\d+}/cancel")
                     .hasRole("CLIENTE")
                     
                 .requestMatchers(HttpMethod.POST, url_admin+"createFunctionary")

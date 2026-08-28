@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -41,14 +43,14 @@ public class ProductService {
         return productRepository.existsByNameAndBrand(name, brand);
     }
 
-    public List<ProductDTO> getAllProducts() {
-        List<Product> products;
-        if (isClient()) {
-            products = productRepository.findAllByAvailable(true);
+    public Page<ProductDTO> getAllProducts(Pageable pageable) {
+        Page<Product> products;
+        if (userService.isClient()) {
+            products = productRepository.findAllByAvailable(true, pageable);
         } else {
-            products = productRepository.findAll();
+            products = productRepository.findAll(pageable);
         }
-        return products.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return products.map(this::convertToDTO);
     }
 
     @Transactional
@@ -71,7 +73,7 @@ public class ProductService {
         return convertToDTO(productRepository.save(product));
     }
 
-    public void addCategoriesToProduct(Product product, List<String> categories) {
+    private void addCategoriesToProduct(Product product, List<String> categories) {
         for (String categoryName : categories) {
             if (categoryRepository.existsByName(categoryName)) {
                 Category category = categoryRepository.findByName(categoryName);
@@ -143,30 +145,30 @@ public class ProductService {
         }
     }
 
-    public List<ProductDTO> getProductsByName(String name) {
-        List<Product> products;
-        if (isClient()) {
-            products = productRepository.findByNameContainingIgnoreCaseAndAvailable(name, true);
+    public Page<ProductDTO> getProductsByName(String name, Pageable pageable) {
+        Page<Product> products;
+        if (userService.isClient()) {
+            products = productRepository.findByNameContainingIgnoreCaseAndAvailable(name, true, pageable);
         } else {
-            products = productRepository.findByNameContainingIgnoreCase(name);
+            products = productRepository.findByNameContainingIgnoreCase(name, pageable);
         }
-        return products.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return products.map(this::convertToDTO);
     }
 
-    public List<ProductDTO> getProductsByBrand(String brand) {
-        List<Product> products;
-        if (isClient()) {
-            products = productRepository.findByBrandContainingIgnoreCaseAndAvailable(brand, true);
+    public Page<ProductDTO> getProductsByBrand(String brand, Pageable pageable) {
+        Page<Product> products;
+        if (userService.isClient()) {
+            products = productRepository.findByBrandContainingIgnoreCaseAndAvailable(brand, true, pageable);
         } else {
-            products = productRepository.findByBrandContainingIgnoreCase(brand);
+            products = productRepository.findByBrandContainingIgnoreCase(brand, pageable);
         }
-        return products.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return products.map(this::convertToDTO);
     }
 
     public ProductDTO getProductByBrandAndName(String brand, String name) {
         if (productExists(name, brand)) {
             Product product;
-            if (isClient()) {
+            if (userService.isClient()) {
                 product = productRepository.findByBrandAndNameAndAvailable(brand, name, true);
             } else {
                 product = productRepository.findByBrandAndName(brand, name);
@@ -177,18 +179,18 @@ public class ProductService {
                 "No product found with brand: " + brand + " and name: " + name);
     }
 
-    public List<ProductDTO> getProductsByCategoryName(String name) {
-        List<Product> products;
-        if (isClient()) {
-            products = productRepository.findByCategoryNameContainingAndAvailable(name);
+    public Page<ProductDTO> getProductsByCategoryName(String name, Pageable pageable) {
+        Category category = categoryRepository.findByName(name);
+        if (category == null) {
+            throw new ResourceNotFoundException("Category with name: " + name + " not found");
+        }
+        Page<Product> products;
+        if (userService.isClient()) {
+            products = productRepository.findByCategoryNameAndAvailable(name, true, pageable);
         } else {
-            products = productRepository.findByCategoryNameContaining(name);
+            products = productRepository.findByCategoryName(name, pageable);
         }
-
-        if (products.isEmpty()) {
-            throw new ResourceNotFoundException("No products found in category with name: " + name);
-        }
-        return products.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return products.map(this::convertToDTO);
     }
 
     public ProductDTO convertToDTO(Product product) {
@@ -220,12 +222,6 @@ public class ProductService {
 
     public boolean existById(Long productId) {
         return productRepository.existsById(productId);
-    }
-
-    private boolean isClient() {
-        User user = userService.getLoggedUser();
-        return user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_CLIENTE"));
     }
 
 }

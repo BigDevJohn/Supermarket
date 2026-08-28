@@ -179,7 +179,7 @@ public class ProductController {
         @ApiResponse(responseCode = "409", description = "Product was already available",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
-    @PutMapping("/{id}/disponibilizar")
+    @PutMapping("/{id}/available")
     public ResponseEntity<Response> makeProductAvailable(@PathVariable Long id) {
         productService.makeAvailable(id);
         return ResponseEntity.ok(new Response(Instant.now(), "Product made available successfully."));
@@ -194,7 +194,7 @@ public class ProductController {
         @ApiResponse(responseCode = "409", description = "Product was already unavailable",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
-    @PutMapping("/{id}/indisponibilizar")
+    @PutMapping("/{id}/unavailable")
     public ResponseEntity<Response> makeProductUnavailable(@PathVariable Long id) {
         productService.makeUnavailable(id);
         return ResponseEntity.ok(new Response(Instant.now(), "Product made unavailable successfully."));

@@ -17,9 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(classes = SupermarketApplication.class)
 @AutoConfigureMockMvc
+@Transactional
 public class SupermarketApplicationTests {
 
 	@Autowired
@@ -29,21 +31,32 @@ public class SupermarketApplicationTests {
 
 	@Test
 	public void testProductWithoutAuth_Forbidden() throws Exception {
-		mvc.perform(get(baseUrl + "product/all")).andExpect(status().isForbidden());
+		mvc.perform(get(baseUrl + "product/all"))
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
 	public void testProductWithAuth() throws Exception {
-		mvc.perform(get(baseUrl + "product/all")).andExpect(status().isOk());
+		mvc.perform(get(baseUrl + "product/all"))
+				.andExpect(status().isOk());
 	}
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
 	public void testProductGetWithAuth() throws Exception {
-		mvc.perform(get(baseUrl + "product/1")).andExpect(status().isOk()).andExpect(
-				content().string(
-						"{\"id\":1,\"name\":\"Smartphone\",\"brand\":\"Samsung\",\"price\":3000.00,\"description\":\"O melhor da Samsung\",\"available\":true,\"categories\":[{\"id\":2,\"name\":\"Smartphones\"},{\"id\":4,\"name\":\"Eletrônicos\"}],\"images\":[],\"available\":true,\"id\":1}"));
+		mvc.perform(get(baseUrl + "product/1"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.id").value(1))
+				.andExpect(jsonPath("$.name").value("Smartphone"))
+				.andExpect(jsonPath("$.brand").value("Samsung"))
+				.andExpect(jsonPath("$.price").value(3000.00))
+				.andExpect(jsonPath("$.description").value("O melhor da Samsung"))
+				.andExpect(jsonPath("$.available").value(true))
+				.andExpect(jsonPath("$.categories").isArray())
+				.andExpect(jsonPath("$.categories", org.hamcrest.Matchers.containsInAnyOrder("Smartphones", "Eletrônicos")))
+				.andExpect(jsonPath("$.images").isArray());
 	}
 
 	@Test
@@ -55,7 +68,7 @@ public class SupermarketApplicationTests {
 				        "brand": "LG",
 				        "price": 3000,
 				        "stock": 20,
-				        "description": "O melhor da Samsung",
+				        "description": "O melhor da LG",
 				        "categories": ["Smartphones", "Eletrônicos"]
 				    }
 				""";
@@ -69,6 +82,52 @@ public class SupermarketApplicationTests {
 				.andExpect(jsonPath("$.name").value("Smartphone"))
 				.andExpect(jsonPath("$.brand").value("LG"));
 	}
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
+	public void testGetStockWithAuth() throws Exception {
+		mvc.perform(get("/supermarket/stock/1"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.quantity").value(20));
+	}
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
+	public void testEntryStockWithAuth() throws Exception {
+		String stockJson = """
+				    {
+				        "quantity": 5
+				    }
+				""";
+
+		mvc.perform(put("/supermarket/stock/2/entries")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(stockJson)
+				.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.quantity").value(37));
+	}
+
+	@Test
+	@WithUserDetails("admin@gmail.com")
+	public void testExitStockWithAuth() throws Exception {
+		String stockJson = """
+				    {
+				        "quantity": 5
+				    }
+				""";
+
+		mvc.perform(put("/supermarket/stock/2/exits")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(stockJson)
+				.with(csrf()))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.quantity").value(27));
+	}
+
 
 	@Test
 	@WithUserDetails("admin@gmail.com")
@@ -89,7 +148,7 @@ public class SupermarketApplicationTests {
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.name").value("Smartphone"))
-				.andExpect(jsonPath("$.stock").value("30"));
+				.andExpect(jsonPath("$.brand").value("LG"));
 	}
 
 	@Test
@@ -105,14 +164,14 @@ public class SupermarketApplicationTests {
 	public void testCreateCategory() throws Exception {
 		String jsonSend = """
 				{
-                    "name": "Ferramentas"
-                }
+				                "name": "Ferramentas"
+				            }
 				""";
 		String jsonExpect = """
 				{
 				    "id": 5,
-                    "name": "Ferramentas"
-                }
+				                "name": "Ferramentas"
+				            }
 				""";
 		mvc.perform(post("/supermarket/category/save")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -134,7 +193,7 @@ public class SupermarketApplicationTests {
 	@Test
 	@WithMockUser(username = "joao@gmail.com", roles = "CLIENTE")
 	public void testCreateOrder() throws Exception {
-		mvc.perform(post(baseUrl + "/order/create")
+		mvc.perform(post(baseUrl + "order/create")
 				.with(csrf()))
 				.andExpect(status().isCreated());
 	}

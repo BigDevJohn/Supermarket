@@ -41,7 +41,7 @@ public class AdminController {
             content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = ApiError.class)))
     })
-    @PostMapping("/criarFuncionario")
+    @PostMapping("/createEmployee")
     public ResponseEntity<AuthResponseDTO> saveEmployee(@RequestBody @Valid User user) {
         User savedUser = userService.saveEmployee(user);
         String token = tokenService.generateToken(savedUser);

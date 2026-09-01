@@ -63,7 +63,7 @@ public class ProductController {
 
     @Operation(summary = "Returns all products")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class))))
+            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/all")
     public ResponseEntity<Page<ProductDTO>> getAllProducts(
@@ -73,7 +73,7 @@ public class ProductController {
 
     @Operation(summary = "Finds products by name")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class)))),
+            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "No products found with the given name", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     @GetMapping("/by-name")
@@ -81,7 +81,7 @@ public class ProductController {
             @Parameter(description = "Product name to search for") @RequestParam String name,
             @PageableDefault(size = 20, sort = "name") Pageable pageable) {
         Page<ProductDTO> products = productService.getProductsByName(name, pageable);
-        if (products.isEmpty()) {
+        if (products.getTotalElements() == 0 || products == null) {
             throw new ResourceNotFoundException("No products found with name: " + name);
         }
         return ResponseEntity.ok(products);
@@ -89,7 +89,7 @@ public class ProductController {
 
     @Operation(summary = "Finds products by brand")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class)))),
+            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "No products found with the given brand", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     @GetMapping("/by-brand")
@@ -97,9 +97,6 @@ public class ProductController {
             @Parameter(description = "Brand to search for") @RequestParam String brand,
             @PageableDefault(size = 20, sort = "name") Pageable pageable) {
         Page<ProductDTO> products = productService.getProductsByBrand(brand, pageable);
-        if (products.isEmpty()) {
-            throw new ResourceNotFoundException("No products found with brand: " + brand);
-        }
         return ResponseEntity.ok(products);
     }
 
@@ -117,7 +114,7 @@ public class ProductController {
 
     @Operation(summary = "Finds products by category name")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = ProductDTO.class)))),
+            @ApiResponse(responseCode = "200", description = "Products found successfully", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "No products found in the given category", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiError.class)))
     })
     @GetMapping("/by-category-name")
@@ -125,9 +122,6 @@ public class ProductController {
             @Parameter(description = "Category name") @RequestParam String name,
             @PageableDefault(size = 20, sort = "name") Pageable pageable) {
         Page<ProductDTO> products = productService.getProductsByCategoryName(name, pageable);
-        if (products.isEmpty()) {
-            throw new ResourceNotFoundException("No products found in category: " + name);
-        }
         return ResponseEntity.ok(products);
     }
 

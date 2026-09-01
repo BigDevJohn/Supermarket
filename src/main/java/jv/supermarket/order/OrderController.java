@@ -82,8 +82,7 @@ public class OrderController {
                 array = @ArraySchema(schema = @Schema(implementation = OrderDTO.class)))),
         @ApiResponse(responseCode = "404",
             description = "User has no orders.",
-            content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = ApiError.class)))
+            content = @Content(mediaType = "application/json"))
     })
     @GetMapping("by-user")
     public ResponseEntity<Page<OrderDTO>> getOrdersByUser(Pageable pageable) {

@@ -1,6 +1,7 @@
 package jv.supermarket.product;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,6 @@ import jv.supermarket.shared.customexception.AlreadyExistException;
 import jv.supermarket.shared.customexception.ResourceNotFoundException;
 import jv.supermarket.stock.Stock;
 import jv.supermarket.stock.StockService;
-import jv.supermarket.user.User;
 import jv.supermarket.user.UserService;
 
 @Service
@@ -152,6 +152,10 @@ public class ProductService {
         } else {
             products = productRepository.findByNameContainingIgnoreCase(name, pageable);
         }
+
+        if (products.getTotalElements() == 0 || products == null) {
+            throw new ResourceNotFoundException("No products found with name: " + name);
+        }
         return products.map(this::convertToDTO);
     }
 
@@ -162,33 +166,36 @@ public class ProductService {
         } else {
             products = productRepository.findByBrandContainingIgnoreCase(brand, pageable);
         }
+
+        if (products.getTotalElements() == 0 || products == null) {
+            throw new ResourceNotFoundException("No products found with brand: " + brand);
+        }
         return products.map(this::convertToDTO);
     }
 
     public ProductDTO getProductByBrandAndName(String brand, String name) {
-        if (productExists(name, brand)) {
-            Product product;
-            if (userService.isClient()) {
-                product = productRepository.findByBrandAndNameAndAvailable(brand, name, true);
-            } else {
-                product = productRepository.findByBrandAndName(brand, name);
-            }
-            return convertToDTO(product);
+        Product product;
+        if (userService.isClient()) {
+            product = productRepository.findByBrandAndNameAndAvailable(brand, name, true);
+        } else {
+            product = productRepository.findByBrandAndName(brand, name);
         }
-        throw new ResourceNotFoundException(
-                "No product found with brand: " + brand + " and name: " + name);
+
+        if (product == null) {
+            throw new ResourceNotFoundException("Product with brand: " + brand + " and name: " + name + " not found");
+        }
+        return convertToDTO(product);
     }
 
     public Page<ProductDTO> getProductsByCategoryName(String name, Pageable pageable) {
-        Category category = categoryRepository.findByName(name);
-        if (category == null) {
-            throw new ResourceNotFoundException("Category with name: " + name + " not found");
-        }
         Page<Product> products;
         if (userService.isClient()) {
             products = productRepository.findByCategoryNameAndAvailable(name, true, pageable);
         } else {
             products = productRepository.findByCategoryName(name, pageable);
+        }
+        if (products.getTotalElements() == 0 || products == null) {
+            throw new ResourceNotFoundException("Products with category name: " + name + " not found");
         }
         return products.map(this::convertToDTO);
     }
